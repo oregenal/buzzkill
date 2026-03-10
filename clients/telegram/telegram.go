@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"strings"
 )
 
 type Client struct {
@@ -39,6 +40,7 @@ func New() (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &Client{
 		host:   host,
 		path:   "bot" + token,
@@ -61,6 +63,7 @@ func (c *Client) Update() ([]Update, error) {
 		return nil, fmt.Errorf("JSON Unmarshal error: %v", err)
 	}
 	// fmt.Println(res)
+	// BY this in future we can check en internal Telegram API error
 	if !res.Ok {
 		return nil, nil
 	}
@@ -115,7 +118,7 @@ func (c *Client) doRequest(m method, query queryString) ([]byte, error) {
 	}
 	// fmt.Println(string(body))
 
-	return body, err
+	return body, nil
 }
 
 func mustToken(filePath string) (string, error) {
@@ -124,5 +127,5 @@ func mustToken(filePath string) (string, error) {
 		return "", fmt.Errorf("Token file error %v", err)
 	}
 
-	return string(content[:len(content)-1]), nil
+	return strings.TrimSpace(string(content)), nil
 }
