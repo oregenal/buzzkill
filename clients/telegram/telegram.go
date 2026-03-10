@@ -22,6 +22,8 @@ const (
 	sendMessage = "sendMessage"
 )
 
+type queryString map[string]string
+
 type Client struct {
 	host   string
 	path   string
@@ -75,7 +77,7 @@ func (c *Client) SendMessage(msg string) error {
 	return nil
 }
 
-func (c *Client) doRequest(m method, query map[string]string) ([]byte, error) {
+func (c *Client) doRequest(m method, query queryString) ([]byte, error) {
 	q := url.Values{}
 	for i, val := range query {
 		q.Add(i, val)
