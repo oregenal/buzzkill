@@ -1,7 +1,7 @@
 package telegram
 
 type Response struct {
-	OK bool `json:"ok"`
+	Ok     bool   `json:"ok"`
 	Result Update `json:"result"`
 }
 
