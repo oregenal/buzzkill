@@ -55,6 +55,7 @@ func (c *Client) Update() ([]Update, error) {
 
 	resp, err := c.doRequest(getUpdates, query)
 	if err != nil {
+		// TODO No need to exit, need to retry
 		return nil, fmt.Errorf("Fail to update: %v", err)
 	}
 
@@ -63,7 +64,7 @@ func (c *Client) Update() ([]Update, error) {
 		return nil, fmt.Errorf("JSON Unmarshal error: %v", err)
 	}
 	// fmt.Println(res)
-	// BY this in future we can check en internal Telegram API error
+	// TODO BY this in future we can check en internal Telegram API error
 	if !res.Ok {
 		return nil, nil
 	}
