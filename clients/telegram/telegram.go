@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -11,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"log"
 )
 
 type Client struct {
@@ -63,7 +63,6 @@ func (c *Client) Start() {
 		if err != nil {
 			log.Println(err)
 		}
-		// fmt.Println(ubdates)
 
 		for _, upd := range ubdates {
 			fmt.Println(
@@ -99,7 +98,6 @@ func (c *Client) Update() ([]Update, error) {
 	if err := json.Unmarshal(resp, &updates); err != nil {
 		return nil, fmt.Errorf("JSON Unmarshal error: %v", err)
 	}
-	// fmt.Println(updates)
 	// TODO BY this in future we can check en internal Telegram API error
 	if !updates.Ok {
 		return nil, nil
@@ -108,7 +106,6 @@ func (c *Client) Update() ([]Update, error) {
 	for _, upd := range updates.Result {
 		if upd.ID >= c.offset {
 			c.offset = upd.ID + 1
-			// fmt.Println(upd.ID)
 		}
 	}
 
@@ -133,34 +130,29 @@ func (c *Client) doRequest(m method, query queryString) ([]byte, error) {
 	for i, val := range query {
 		q.Add(i, val)
 	}
-	// fmt.Println(q)
 
 	u := url.URL{
 		Scheme: protocol,
 		Host:   host,
 		Path:   path.Join(c.path, string(m)),
 	}
-	// fmt.Println(u)
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("Request creation fail %v", err)
 	}
 	req.URL.RawQuery = q.Encode()
-	// fmt.Println(req)
 
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("Response error %v", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
-	// fmt.Println(resp)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("Body read error: %v", err)
 	}
-	// fmt.Println(string(body))
 
 	return body, nil
 }
