@@ -31,6 +31,8 @@ const (
 	sendMessage        = "sendMessage"
 )
 
+var offset int64 = 0
+
 type queryString map[string]string
 
 // https://api.telegram.org/bot<token>/METHOD_NAME
@@ -50,7 +52,7 @@ func New() (*Client, error) {
 
 func (c *Client) Update() ([]Update, error) {
 	query := make(map[string]string, 2)
-	query["offset"] = strconv.Itoa(0)
+	query["offset"] = strconv.FormatInt(offset, 10)
 	query["limit"] = strconv.Itoa(100)
 
 	resp, err := c.doRequest(getUpdates, query)
@@ -59,17 +61,24 @@ func (c *Client) Update() ([]Update, error) {
 		return nil, fmt.Errorf("Fail to update: %v", err)
 	}
 
-	var res UpdateResponse
-	if err := json.Unmarshal(resp, &res); err != nil {
+	var updates UpdateResponse
+	if err := json.Unmarshal(resp, &updates); err != nil {
 		return nil, fmt.Errorf("JSON Unmarshal error: %v", err)
 	}
-	// fmt.Println(res)
+	// fmt.Println(updates)
 	// TODO BY this in future we can check en internal Telegram API error
-	if !res.Ok {
+	if !updates.Ok {
 		return nil, nil
 	}
 
-	return res.Result, nil
+	for _, upd := range(updates.Result) {
+		if upd.ID > offset {
+			offset = upd.ID
+			// fmt.Println(upd.ID)
+		}
+	}
+
+	return updates.Result, nil
 }
 
 func (c *Client) SendMessage(msg string) error {
