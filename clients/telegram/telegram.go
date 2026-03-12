@@ -16,6 +16,7 @@ type Client struct {
 	host   string
 	path   string
 	client http.Client
+	offset int64
 }
 
 const (
@@ -31,8 +32,6 @@ const (
 	sendMessage        = "sendMessage"
 )
 
-var offset int64 = 0
-
 type queryString map[string]string
 
 // https://api.telegram.org/bot<token>/METHOD_NAME
@@ -47,12 +46,13 @@ func New() (*Client, error) {
 		host:   host,
 		path:   "bot" + token,
 		client: http.Client{},
+		offset: 0,
 	}, nil
 }
 
 func (c *Client) Update() ([]Update, error) {
 	query := make(map[string]string, 2)
-	query["offset"] = strconv.FormatInt(offset, 10)
+	query["offset"] = strconv.FormatInt(c.offset, 10)
 	query["limit"] = strconv.Itoa(100)
 
 	resp, err := c.doRequest(getUpdates, query)
@@ -72,8 +72,8 @@ func (c *Client) Update() ([]Update, error) {
 	}
 
 	for _, upd := range(updates.Result) {
-		if upd.ID > offset {
-			offset = upd.ID
+		if upd.ID >= c.offset {
+			c.offset = upd.ID + 1
 			// fmt.Println(upd.ID)
 		}
 	}
@@ -81,9 +81,9 @@ func (c *Client) Update() ([]Update, error) {
 	return updates.Result, nil
 }
 
-func (c *Client) SendMessage(msg string) error {
+func (c *Client) SendMessage(to Chat, msg string) error {
 	query := make(map[string]string, 2)
-	query["chat_id"] = strconv.Itoa(220630034)
+	query["chat_id"] = strconv.FormatInt(to.ID, 10)
 	query["text"] = msg
 
 	_, err := c.doRequest(sendMessage, query)
