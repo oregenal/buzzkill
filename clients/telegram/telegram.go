@@ -21,10 +21,10 @@ type Client struct {
 }
 
 const (
-	tokenFile = ".tgToken"
-	host      = "api.telegram.org"
-	protocol  = "https"
-	timeout = 30
+	tokenFile     = ".tgToken"
+	host          = "api.telegram.org"
+	protocol      = "https"
+	timeout       = 30
 	messagesLimit = 100
 )
 
@@ -46,10 +46,10 @@ func New() (*Client, error) {
 	}
 
 	return &Client{
-		host:   host,
-		path:   "bot" + token,
+		host: host,
+		path: "bot" + token,
 		client: http.Client{
-			Timeout: (timeout + 2)*time.Second,
+			Timeout: (timeout + 2) * time.Second,
 		},
 		offset: 0,
 	}, nil
