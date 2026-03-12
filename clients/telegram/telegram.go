@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"log"
 )
 
 type Client struct {
@@ -53,6 +54,33 @@ func New() (*Client, error) {
 		},
 		offset: 0,
 	}, nil
+}
+
+func (c *Client) Start() {
+	fmt.Println(time.Now(), "Bot started...")
+	for {
+		ubdates, err := c.Update()
+		if err != nil {
+			log.Println(err)
+		}
+		// fmt.Println(ubdates)
+
+		for _, upd := range ubdates {
+			fmt.Println(
+				time.Unix(upd.Message.Time, 0),
+				upd.Message.User.UserName,
+				upd.Message.Chat.Type,
+				upd.Message.Text,
+				// upd.Message.ID,
+			)
+			if err := c.SendMessage(
+				upd.Message.Chat,
+				upd.Message.Text,
+			); err != nil {
+				log.Println(err)
+			}
+		}
+	}
 }
 
 func (c *Client) Update() ([]Update, error) {

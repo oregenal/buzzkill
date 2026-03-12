@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
-	"log"
 
 	"gotelebot/clients/telegram"
 )
@@ -15,36 +13,7 @@ func main() {
 	}
 	// fmt.Println(tgClient)
 
-	fmt.Println(time.Now(), "Bot started...")
-	for {
-		ubdates, err := tgClient.Update()
-		if err != nil {
-			log.Println(err)
-			// panic(err)
-		}
-		// fmt.Println(ubdates)
-
-		// fmt.Println(ubdates)
-		for _, upd := range ubdates {
-			fmt.Println(
-				time.Unix(upd.Message.Time, 0),
-				upd.Message.User.UserName,
-				upd.Message.Chat.Type,
-				upd.Message.Text,
-				// upd.Message.ID,
-			)
-			if err := tgClient.SendMessage(
-				upd.Message.Chat,
-				upd.Message.Text,
-			); err != nil {
-				log.Println(err)
-				// panic(err)
-			}
-		}
-	}
-	// if err := tgClient.SendMessage("Hello from GoTeleBot!"); err != nil {
-	// 	panic(err)
-	// }
+	tgClient.Start()
 
 	fmt.Println("In progress...")
 }
