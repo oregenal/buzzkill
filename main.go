@@ -25,10 +25,10 @@ func main() {
 		for _, upd := range ubdates {
 			fmt.Println(
 				time.Unix(upd.Message.Time, 0),
+				upd.Message.User.UserName,
+				upd.Message.Chat.Type,
 				upd.Message.Text,
-				upd.Message.ID,
-				"User:", upd.Message.User,
-				"Chat:", upd.Message.Chat,
+				// upd.Message.ID,
 			)
 			if err := tgClient.SendMessage(
 				upd.Message.Chat,
@@ -37,8 +37,6 @@ func main() {
 				panic(err)
 			}
 		}
-
-		time.Sleep(5 * time.Second)
 	}
 	// if err := tgClient.SendMessage("Hello from GoTeleBot!"); err != nil {
 	// 	panic(err)

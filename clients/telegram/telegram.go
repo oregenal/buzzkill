@@ -10,6 +10,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Client struct {
@@ -23,6 +24,8 @@ const (
 	tokenFile = ".tgToken"
 	host      = "api.telegram.org"
 	protocol  = "https"
+	timeout = 30
+	messagesLimit = 100
 )
 
 type method string
@@ -45,7 +48,9 @@ func New() (*Client, error) {
 	return &Client{
 		host:   host,
 		path:   "bot" + token,
-		client: http.Client{},
+		client: http.Client{
+			Timeout: (timeout + 2)*time.Second,
+		},
 		offset: 0,
 	}, nil
 }
@@ -53,7 +58,8 @@ func New() (*Client, error) {
 func (c *Client) Update() ([]Update, error) {
 	query := make(map[string]string, 2)
 	query["offset"] = strconv.FormatInt(c.offset, 10)
-	query["limit"] = strconv.Itoa(100)
+	query["limit"] = strconv.Itoa(messagesLimit)
+	query["timeout"] = strconv.FormatInt(timeout, 10)
 
 	resp, err := c.doRequest(getUpdates, query)
 	if err != nil {
