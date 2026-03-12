@@ -71,7 +71,7 @@ func (c *Client) Update() ([]Update, error) {
 		return nil, nil
 	}
 
-	for _, upd := range(updates.Result) {
+	for _, upd := range updates.Result {
 		if upd.ID >= c.offset {
 			c.offset = upd.ID + 1
 			// fmt.Println(upd.ID)

@@ -31,7 +31,7 @@ func main() {
 				"Chat:", upd.Message.Chat,
 			)
 			if err := tgClient.SendMessage(
-				upd.Message.Chat, 
+				upd.Message.Chat,
 				upd.Message.Text,
 			); err != nil {
 				panic(err)
