@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
+	"log"
 
 	"gotelebot/clients/telegram"
 )
@@ -17,7 +18,8 @@ func main() {
 	for {
 		ubdates, err := tgClient.Update()
 		if err != nil {
-			panic(err)
+			log.Println(err)
+			// panic(err)
 		}
 		// fmt.Println(ubdates)
 
@@ -34,7 +36,8 @@ func main() {
 				upd.Message.Chat,
 				upd.Message.Text,
 			); err != nil {
-				panic(err)
+				log.Println(err)
+				// panic(err)
 			}
 		}
 	}
