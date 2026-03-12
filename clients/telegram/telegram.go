@@ -83,7 +83,7 @@ func (c *Client) Start() {
 }
 
 func (c *Client) Update() ([]Update, error) {
-	query := make(map[string]string, 2)
+	query := make(map[string]string, 3)
 	query["offset"] = strconv.FormatInt(c.offset, 10)
 	query["limit"] = strconv.Itoa(messagesLimit)
 	query["timeout"] = strconv.FormatInt(timeout, 10)
