@@ -15,6 +15,7 @@ func main() {
 	}
 	// fmt.Println(tgClient)
 
+	fmt.Println(time.Now(), "Bot started...")
 	for {
 		ubdates, err := tgClient.Update()
 		if err != nil {
