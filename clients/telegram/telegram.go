@@ -59,11 +59,10 @@ func New() (*Client, error) {
 
 func (c *Client) Start(ctx context.Context) {
 	fmt.Println(time.Now(), "Bot started...")
-	run := true
-	for run {
+	for {
 		ubdates, err := c.Update(ctx)
 		if ctx.Err() != nil {
-			run = false
+			return
 		}
 		if err != nil {
 			log.Println(err)

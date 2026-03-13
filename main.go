@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"os"
 	"os/signal"
 
@@ -25,5 +25,5 @@ func main() {
 
 	tgClient.Start(ctx)
 
-	fmt.Println("In progress...")
+	log.Println("Shutdown...")
 }
