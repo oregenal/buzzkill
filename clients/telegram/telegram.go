@@ -121,7 +121,7 @@ func (c *Client) SendMessage(to Chat, msg string) error {
 	query["chat_id"] = strconv.FormatInt(to.ID, 10)
 	query["text"] = msg
 
-	_, err := c.doRequest(nil, sendMessage, query)
+	_, err := c.doRequest(context.TODO(), sendMessage, query)
 	if err != nil {
 		return fmt.Errorf("fail to send message: %v", err)
 	}
@@ -141,13 +141,7 @@ func (c *Client) doRequest(ctx context.Context, m method, query queryString) ([]
 		Path:   path.Join(c.path, string(m)),
 	}
 
-	req := &http.Request{}
-	var err error
-	if ctx != nil {
-		req, err = http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
-	} else {
-		req, err = http.NewRequest(http.MethodGet, u.String(), nil)
-	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("request creation fail %v", err)
 	}
