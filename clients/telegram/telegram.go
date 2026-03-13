@@ -87,10 +87,11 @@ func (c *Client) Start(ctx context.Context) {
 }
 
 func (c *Client) Update(ctx context.Context) ([]Update, error) {
-	query := make(map[string]string, 3)
-	query["offset"] = strconv.FormatInt(c.offset, 10)
-	query["limit"] = strconv.Itoa(messagesLimit)
-	query["timeout"] = strconv.FormatInt(timeout, 10)
+	query := map[string]string{
+		"offset": strconv.FormatInt(c.offset, 10),
+		"limit": strconv.Itoa(messagesLimit),
+		"timeout": strconv.FormatInt(timeout, 10),
+	}
 
 	resp, err := c.doRequest(ctx, getUpdates, query)
 	if err != nil {
@@ -117,9 +118,10 @@ func (c *Client) Update(ctx context.Context) ([]Update, error) {
 }
 
 func (c *Client) SendMessage(to Chat, msg string) error {
-	query := make(map[string]string, 2)
-	query["chat_id"] = strconv.FormatInt(to.ID, 10)
-	query["text"] = msg
+	query := map[string]string{
+		"chat_id": strconv.FormatInt(to.ID, 10),
+		"text": msg,
+	}
 
 	_, err := c.doRequest(context.TODO(), sendMessage, query)
 	if err != nil {
