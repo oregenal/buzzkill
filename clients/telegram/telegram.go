@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -56,10 +57,14 @@ func New() (*Client, error) {
 	}, nil
 }
 
-func (c *Client) Start() {
+func (c *Client) Start(ctx context.Context) {
 	fmt.Println(time.Now(), "Bot started...")
-	for {
-		ubdates, err := c.Update()
+	run := true
+	for run {
+		ubdates, err := c.Update(ctx)
+		if ctx.Err() != nil {
+			run = false
+		}
 		if err != nil {
 			log.Println(err)
 		}
@@ -82,13 +87,13 @@ func (c *Client) Start() {
 	}
 }
 
-func (c *Client) Update() ([]Update, error) {
+func (c *Client) Update(ctx context.Context) ([]Update, error) {
 	query := make(map[string]string, 3)
 	query["offset"] = strconv.FormatInt(c.offset, 10)
 	query["limit"] = strconv.Itoa(messagesLimit)
 	query["timeout"] = strconv.FormatInt(timeout, 10)
 
-	resp, err := c.doRequest(getUpdates, query)
+	resp, err := c.doRequest(ctx, getUpdates, query)
 	if err != nil {
 		// TODO No need to exit, need to retry
 		return nil, fmt.Errorf("fail to update: %v", err)
@@ -117,7 +122,7 @@ func (c *Client) SendMessage(to Chat, msg string) error {
 	query["chat_id"] = strconv.FormatInt(to.ID, 10)
 	query["text"] = msg
 
-	_, err := c.doRequest(sendMessage, query)
+	_, err := c.doRequest(nil, sendMessage, query)
 	if err != nil {
 		return fmt.Errorf("fail to send message: %v", err)
 	}
@@ -125,7 +130,7 @@ func (c *Client) SendMessage(to Chat, msg string) error {
 	return nil
 }
 
-func (c *Client) doRequest(m method, query queryString) ([]byte, error) {
+func (c *Client) doRequest(ctx context.Context, m method, query queryString) ([]byte, error) {
 	q := url.Values{}
 	for i, val := range query {
 		q.Add(i, val)
@@ -137,7 +142,13 @@ func (c *Client) doRequest(m method, query queryString) ([]byte, error) {
 		Path:   path.Join(c.path, string(m)),
 	}
 
-	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	req := &http.Request{}
+	var err error
+	if ctx != nil {
+		req, err = http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	} else {
+		req, err = http.NewRequest(http.MethodGet, u.String(), nil)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("request creation fail %v", err)
 	}
