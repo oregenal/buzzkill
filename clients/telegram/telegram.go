@@ -33,7 +33,7 @@ type method string
 
 const (
 	getUpdates  method = "getUpdates"
-	sendMessage        = "sendMessage"
+	sendMessage method = "sendMessage"
 )
 
 type queryString map[string]string
@@ -91,7 +91,7 @@ func (c *Client) Update() ([]Update, error) {
 	resp, err := c.doRequest(getUpdates, query)
 	if err != nil {
 		// TODO No need to exit, need to retry
-		return nil, fmt.Errorf("Fail to update: %v", err)
+		return nil, fmt.Errorf("fail to update: %v", err)
 	}
 
 	var updates UpdateResponse
@@ -119,7 +119,7 @@ func (c *Client) SendMessage(to Chat, msg string) error {
 
 	_, err := c.doRequest(sendMessage, query)
 	if err != nil {
-		return fmt.Errorf("Fail to send message: %v", err)
+		return fmt.Errorf("fail to send message: %v", err)
 	}
 
 	return nil
@@ -139,7 +139,7 @@ func (c *Client) doRequest(m method, query queryString) ([]byte, error) {
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("Request creation fail %v", err)
+		return nil, fmt.Errorf("request creation fail %v", err)
 	}
 	req.URL.RawQuery = q.Encode()
 
@@ -151,7 +151,7 @@ func (c *Client) doRequest(m method, query queryString) ([]byte, error) {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("Body read error: %v", err)
+		return nil, fmt.Errorf("body read error: %v", err)
 	}
 
 	return body, nil
@@ -160,7 +160,7 @@ func (c *Client) doRequest(m method, query queryString) ([]byte, error) {
 func mustToken(filePath string) (string, error) {
 	content, err := os.ReadFile(tokenFile)
 	if err != nil {
-		return "", fmt.Errorf("Token file error %v", err)
+		return "", fmt.Errorf("token file error %v", err)
 	}
 
 	return strings.TrimSpace(string(content)), nil
