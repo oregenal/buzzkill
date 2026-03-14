@@ -77,6 +77,7 @@ func (c *Client) Start(ctx context.Context) {
 				// upd.Message.ID,
 			)
 			if err := c.SendMessage(
+				ctx,
 				upd.Message.Chat,
 				upd.Message.Text,
 			); err != nil {
@@ -117,13 +118,13 @@ func (c *Client) Update(ctx context.Context) ([]Update, error) {
 	return updates.Result, nil
 }
 
-func (c *Client) SendMessage(to Chat, msg string) error {
+func (c *Client) SendMessage(ctx context.Context, to Chat, msg string) error {
 	query := map[string]string{
 		"chat_id": strconv.FormatInt(to.ID, 10),
 		"text": msg,
 	}
 
-	_, err := c.doRequest(context.TODO(), sendMessage, query)
+	_, err := c.doRequest(ctx, sendMessage, query)
 	if err != nil {
 		return fmt.Errorf("fail to send message: %v", err)
 	}
