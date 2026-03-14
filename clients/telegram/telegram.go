@@ -89,20 +89,20 @@ func (c *Client) Start(ctx context.Context) {
 
 func (c *Client) Update(ctx context.Context) ([]Update, error) {
 	query := map[string]string{
-		"offset": strconv.FormatInt(c.offset, 10),
-		"limit": strconv.Itoa(messagesLimit),
+		"offset":  strconv.FormatInt(c.offset, 10),
+		"limit":   strconv.Itoa(messagesLimit),
 		"timeout": strconv.FormatInt(timeout, 10),
 	}
 
 	resp, err := c.doRequest(ctx, getUpdates, query)
 	if err != nil {
 		// TODO No need to exit, need to retry
-		return nil, fmt.Errorf("fail to update: %v", err)
+		return nil, fmt.Errorf("fail to update %v", err)
 	}
 
 	var updates UpdateResponse
 	if err := json.Unmarshal(resp, &updates); err != nil {
-		return nil, fmt.Errorf("JSON Unmarshal error: %v", err)
+		return nil, fmt.Errorf("JSON unmarshal error %v", err)
 	}
 	// TODO BY this in future we can check en internal Telegram API error
 	if !updates.Ok {
@@ -121,12 +121,12 @@ func (c *Client) Update(ctx context.Context) ([]Update, error) {
 func (c *Client) SendMessage(ctx context.Context, to Chat, msg string) error {
 	query := map[string]string{
 		"chat_id": strconv.FormatInt(to.ID, 10),
-		"text": msg,
+		"text":    msg,
 	}
 
 	_, err := c.doRequest(ctx, sendMessage, query)
 	if err != nil {
-		return fmt.Errorf("fail to send message: %v", err)
+		return fmt.Errorf("fail to send message %v", err)
 	}
 
 	return nil
@@ -152,13 +152,13 @@ func (c *Client) doRequest(ctx context.Context, m method, query queryString) ([]
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("Response error %v", err)
+		return nil, fmt.Errorf("response error %v", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("body read error: %v", err)
+		return nil, fmt.Errorf("body read error %v", err)
 	}
 
 	return body, nil
