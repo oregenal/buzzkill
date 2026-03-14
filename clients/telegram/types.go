@@ -1,5 +1,12 @@
 package telegram
 
+type CheckStatus struct {
+	Ok           bool   `json:"ok"`
+	Bot          User   `json:"result"`
+	Error        int    `json:"error_code,omitempty"`
+	ErrorMessage string `json:"description,omitempty"`
+}
+
 type Response struct {
 	Ok     bool   `json:"ok"`
 	Result Update `json:"result"`
@@ -26,7 +33,7 @@ type Message struct {
 type User struct {
 	ID        int64  `json:"id"`
 	Bot       bool   `json:"is_bot"`
-	FisrtName string `json:"first_name"`
+	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	UserName  string `json:"username"`
 	Lang      string `json:"language_code"`

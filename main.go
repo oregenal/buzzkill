@@ -11,11 +11,6 @@ import (
 )
 
 func main() {
-	tgClient, err := telegram.New()
-	if err != nil {
-		panic(err)
-	}
-
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
 		exit := make(chan os.Signal, 1)
@@ -24,7 +19,12 @@ func main() {
 		cancel()
 	}()
 
-	tgClient.Start(ctx)
+	tgClient, err := telegram.New(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	tgClient.Start()
 
 	log.Println("Bot stopped...")
 }

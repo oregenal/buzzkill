@@ -20,6 +20,7 @@ type Client struct {
 	path   string
 	client http.Client
 	offset int64
+	ctx    context.Context
 }
 
 const (
@@ -35,40 +36,51 @@ type method string
 const (
 	getUpdates  method = "getUpdates"
 	sendMessage method = "sendMessage"
+	getMe       method = "getMe"
 )
 
 type queryString map[string]string
 
 // https://api.telegram.org/bot<token>/METHOD_NAME
-// TODO check for valid token
-// Invalid token receive message:
-// {
-//   "ok": false,
-//   "error_code": 404,
-//   "description": "Not Found"
-// }
-
-func New() (*Client, error) {
+func New(ctx context.Context) (*Client, error) {
 	token, err := mustToken(tokenFile)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Client{
-		host: host,
-		path: "bot" + token,
+	c := &Client{
+		host:   host,
+		path:   "bot" + token,
+		offset: 0,
+		ctx:    ctx,
 		client: http.Client{
 			Timeout: (timeout + 2) * time.Second,
 		},
-		offset: 0,
-	}, nil
+	}
+
+	resp, err := c.doRequest(getMe, nil)
+	if err != nil {
+		log.Println("getMe error", err)
+	}
+
+	var result CheckStatus
+	if err := json.Unmarshal(resp, &result); err != nil {
+		return nil, fmt.Errorf("JSON unmarshal error %v", err)
+	}
+
+	if !result.Ok {
+		log.Fatalf("invalid token")
+	} else {
+		log.Printf("Bot %v identified...", result.Bot.FirstName)
+	}
+	return c, nil
 }
 
-func (c *Client) Start(ctx context.Context) {
+func (c *Client) Start() {
 	log.Println(time.Now(), "Bot started...")
 	for {
-		ubdates, err := c.Update(ctx)
-		if ctx.Err() != nil {
+		ubdates, err := c.Update(c.ctx)
+		if c.ctx.Err() != nil {
 			return
 		}
 		if err != nil {
@@ -84,7 +96,7 @@ func (c *Client) Start(ctx context.Context) {
 				// upd.Message.ID,
 			)
 			if err := c.SendMessage(
-				ctx,
+				c.ctx,
 				upd.Message.Chat,
 				upd.Message.Text,
 			); err != nil {
@@ -101,7 +113,7 @@ func (c *Client) Update(ctx context.Context) ([]Update, error) {
 		"timeout": strconv.FormatInt(timeout, 10),
 	}
 
-	resp, err := c.doRequest(ctx, getUpdates, query)
+	resp, err := c.doRequest(getUpdates, query)
 	if err != nil {
 		// TODO No need to exit, need to retry
 		return nil, fmt.Errorf("fail to update %v", err)
@@ -131,7 +143,7 @@ func (c *Client) SendMessage(ctx context.Context, to Chat, msg string) error {
 		"text":    msg,
 	}
 
-	_, err := c.doRequest(ctx, sendMessage, query)
+	_, err := c.doRequest(sendMessage, query)
 	if err != nil {
 		return fmt.Errorf("fail to send message %v", err)
 	}
@@ -139,7 +151,7 @@ func (c *Client) SendMessage(ctx context.Context, to Chat, msg string) error {
 	return nil
 }
 
-func (c *Client) doRequest(ctx context.Context, m method, query queryString) ([]byte, error) {
+func (c *Client) doRequest(m method, query queryString) ([]byte, error) {
 	q := url.Values{}
 	for i, val := range query {
 		q.Add(i, val)
@@ -151,7 +163,7 @@ func (c *Client) doRequest(ctx context.Context, m method, query queryString) ([]
 		Path:   path.Join(c.path, string(m)),
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	req, err := http.NewRequestWithContext(c.ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("request creation fail %v", err)
 	}
