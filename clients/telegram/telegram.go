@@ -58,7 +58,7 @@ func New() (*Client, error) {
 }
 
 func (c *Client) Start(ctx context.Context) {
-	fmt.Println(time.Now(), "Bot started...")
+	log.Println(time.Now(), "Bot started...")
 	for {
 		ubdates, err := c.Update(ctx)
 		if ctx.Err() != nil {
