@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"gotelebot/clients/telegram"
+	"buzzkill/clients/telegram"
 )
 
 func main() {
