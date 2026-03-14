@@ -40,6 +40,13 @@ const (
 type queryString map[string]string
 
 // https://api.telegram.org/bot<token>/METHOD_NAME
+// TODO check for valid token
+// Invalid token receive message:
+// {
+//   "ok": false,
+//   "error_code": 404,
+//   "description": "Not Found"
+// }
 
 func New() (*Client, error) {
 	token, err := mustToken(tokenFile)

@@ -26,5 +26,5 @@ func main() {
 
 	tgClient.Start(ctx)
 
-	log.Println("Shutdown...")
+	log.Println("Bot stopped...")
 }
