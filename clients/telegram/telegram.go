@@ -60,7 +60,7 @@ func New(ctx context.Context) (*Client, error) {
 
 	resp, err := c.doRequest(getMe, nil)
 	if err != nil {
-		log.Println("getMe error", err)
+		return nil, fmt.Errorf("getMe error %v", err)
 	}
 
 	var result CheckStatus
@@ -69,7 +69,7 @@ func New(ctx context.Context) (*Client, error) {
 	}
 
 	if !result.Ok {
-		log.Fatalf("invalid token")
+		return nil, fmt.Errorf("invalid token")
 	} else {
 		log.Printf("Bot %v identified...", result.Bot.FirstName)
 	}

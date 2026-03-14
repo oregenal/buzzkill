@@ -21,7 +21,7 @@ func main() {
 
 	tgClient, err := telegram.New(ctx)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	tgClient.Start()
