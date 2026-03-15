@@ -79,7 +79,7 @@ func New(ctx context.Context) (*Client, error) {
 func (c *Client) Start() {
 	log.Println(time.Now(), "Bot started...")
 	for {
-		ubdates, err := c.Update(c.ctx)
+		ubdates, err := c.Update()
 		if c.ctx.Err() != nil {
 			return
 		}
@@ -96,7 +96,6 @@ func (c *Client) Start() {
 				// upd.Message.ID,
 			)
 			if err := c.SendMessage(
-				c.ctx,
 				upd.Message.Chat,
 				upd.Message.Text,
 			); err != nil {
@@ -106,7 +105,7 @@ func (c *Client) Start() {
 	}
 }
 
-func (c *Client) Update(ctx context.Context) ([]Update, error) {
+func (c *Client) Update() ([]Update, error) {
 	query := map[string]string{
 		"offset":  strconv.FormatInt(c.offset, 10),
 		"limit":   strconv.Itoa(messagesLimit),
@@ -137,7 +136,7 @@ func (c *Client) Update(ctx context.Context) ([]Update, error) {
 	return updates.Result, nil
 }
 
-func (c *Client) SendMessage(ctx context.Context, to Chat, msg string) error {
+func (c *Client) SendMessage(to Chat, msg string) error {
 	query := map[string]string{
 		"chat_id": strconv.FormatInt(to.ID, 10),
 		"text":    msg,
