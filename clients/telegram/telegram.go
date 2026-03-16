@@ -150,6 +150,10 @@ func (c *Client) SendMessage(to Chat, msg string) error {
 	return nil
 }
 
+func (c* Client) Ctx() error {
+	return c.ctx.Err()
+}
+
 func (c *Client) doRequest(m method, query queryString) ([]byte, error) {
 	q := url.Values{}
 	for i, val := range query {

@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"buzzkill/clients/telegram"
+	"buzzkill/internal/bot"
 )
 
 func main() {
@@ -24,7 +25,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	tgClient.Start()
+	bot.Start(tgClient)
 
 	log.Println("Bot stopped...")
 }
