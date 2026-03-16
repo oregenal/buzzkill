@@ -150,7 +150,7 @@ func (c *Client) SendMessage(to Chat, msg string) error {
 	return nil
 }
 
-func (c* Client) Ctx() error {
+func (c *Client) Ctx() error {
 	return c.ctx.Err()
 }
 

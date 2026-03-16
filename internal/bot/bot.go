@@ -1,8 +1,8 @@
 package bot
 
 import (
-	"log"
 	"fmt"
+	"log"
 	"time"
 
 	"buzzkill/clients/telegram"
