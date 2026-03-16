@@ -77,7 +77,7 @@ func New(ctx context.Context) (*Client, error) {
 }
 
 func (c *Client) Start() {
-	log.Println(time.Now(), "Bot started...")
+	log.Println("Bot started...")
 	for {
 		ubdates, err := c.Update()
 		if c.ctx.Err() != nil {
