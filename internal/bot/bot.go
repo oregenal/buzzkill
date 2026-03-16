@@ -16,17 +16,17 @@ type Sender interface {
 	SendMessage(telegram.Chat, string) error
 }
 
-type ContextCheker interface {
+type ContextChecker interface {
 	Ctx() error
 }
 
-type Processor interface {
+type Client interface {
 	Updater
 	Sender
-	ContextCheker
+	ContextChecker
 }
 
-func Start(p Processor) {
+func Start(p Client) {
 	for {
 		updates, err := p.Update()
 		if p.Ctx() != nil {
