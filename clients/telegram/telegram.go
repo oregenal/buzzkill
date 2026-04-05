@@ -76,7 +76,7 @@ func New(ctx context.Context) (*Client, error) {
 	return c, nil
 }
 
-// TODO deprincated. Inplemented in external logic.
+// TODO deprecated. Inplemented in external logic.
 func (c *Client) Start() {
 	log.Println("Bot started...")
 	for {
