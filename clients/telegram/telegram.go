@@ -107,7 +107,7 @@ func (c *Client) Start() {
 }
 
 func (c *Client) Update() ([]Update, error) {
-	query := map[string]string{
+	query := queryString{
 		"offset":  strconv.FormatInt(c.offset, 10),
 		"limit":   strconv.Itoa(messagesLimit),
 		"timeout": strconv.FormatInt(timeout, 10),
@@ -138,7 +138,7 @@ func (c *Client) Update() ([]Update, error) {
 }
 
 func (c *Client) SendMessage(to Chat, msg string) error {
-	query := map[string]string{
+	query := queryString{
 		"chat_id": strconv.FormatInt(to.ID, 10),
 		"text":    msg,
 	}
